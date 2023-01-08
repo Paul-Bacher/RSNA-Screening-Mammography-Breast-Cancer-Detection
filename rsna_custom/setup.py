@@ -7,6 +7,7 @@ setup(
     description='A custom package for the RSNA Breast Cancer Detection competition',
     author='Paul Bacher',
     author_email='paulbacher881@gmail.com',
+    license='Free',
     install_requires=['python-gdcm', 'pydicom', 'pylibjpeg', 'numpy', 'pandas',
     'opencv-python', 'matplotlib', 'tqdm', 'joblib'],
 )
