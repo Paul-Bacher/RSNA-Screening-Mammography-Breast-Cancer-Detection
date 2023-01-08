@@ -1,20 +1,25 @@
+# Install required libraries
 !pip install -qU python-gdcm pydicom pylibjpeg
 
-import gdcm
-import pylibjpeg
+# Standard library imports
+import os
 import time
-import random
+
+# Third-party library imports
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import os
-from glob import glob
-from tqdm.notebook import tqdm
-import pydicom
 import cv2
-from joblib import Parallel, delayed
-from tqdm.notebook import trange
+import pydicom
 from pydicom.pixel_data_handlers import apply_windowing
+
+# Visualization library imports
+import matplotlib.pyplot as plt
+
+# Progress bar library imports
+from tqdm.notebook import tqdm, trange
+
+# Parallel processing library imports
+from joblib import Parallel, delayed
 
 
 class MammographyPreprocessor():

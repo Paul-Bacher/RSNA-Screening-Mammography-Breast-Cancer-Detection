@@ -1,0 +1,3 @@
+from .src import mammography_preprocessor
+
+MammographyPreprocessor = mammography_preprocessor.MammographyPreprocessor
