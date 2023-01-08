@@ -8,6 +8,7 @@ import pandas as pd
 import cv2
 import pydicom
 from pydicom.pixel_data_handlers import apply_windowing
+import dicomsdl
 
 # Visualization library imports
 import matplotlib.pyplot as plt
