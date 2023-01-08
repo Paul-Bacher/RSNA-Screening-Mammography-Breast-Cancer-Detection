@@ -19,14 +19,44 @@ from tqdm.notebook import tqdm, trange
 from joblib import Parallel, delayed
 
 
+# V2
 class MammographyPreprocessor():
     
     # Constructor
-    def __init__(self, size: tuple=None, breast_side: str='L'):
+    def __init__(self, size: tuple=None, breast_side: str='L',
+                 csv_path=None, train_path=None):
         self.size = size
         os.makedirs(os.getcwd(), exist_ok=True)
         self.breast_side = breast_side
         assert breast_side in ['L', 'R'], "breast_side should be 'L' or 'R'"
+        # implement the paths of the original RSNA dataset (V2)
+        self.csv_path = '/kaggle/input/rsna-breast-cancer-detection/train.csv'
+        self.train_path = '/kaggle/input/rsna-breast-cancer-detection/train_images'
+        if csv_path:
+            self.csv_path = csv_path
+        if train_path:
+            self.train_path = train_path
+        self.df = pd.read_csv(self.csv_path)
+    
+    # Get the paths from the preprocessor (V2)
+    def get_paths(self, n: int=None, shuffle: bool=False, return_cache: bool=False):
+        if n == None:
+            n = len(self.df)
+        if shuffle == True:
+            df = self.df.sample(frac=1, random_state=0).copy()
+        else:
+            df = self.df.copy()
+        paths = []
+        ids_cache = []
+        for i in range(n):
+            patient = str(df.iloc[i]['patient_id'])
+            scan = str(df.iloc[i]['image_id'])
+            paths.append(self.train_path + '/' + patient + '/' + scan + '.dcm')
+            ids_cache.append({'patient_id': patient, 'scan_id': scan})
+        if return_cache:
+            return paths, ids_cache
+        else:
+            return paths
     
     # Read from a path and convert to image array
     def read_image(self, path: str):
@@ -37,8 +67,8 @@ class MammographyPreprocessor():
     # Apply the preprocessing methods on one image
     def preprocess_single_image(self, path: str, save: bool=False,
                                 png: bool=True):
-        scan = pydicom.dcmread(path)
-        img = scan.pixel_array
+        scan = dicomsdl.open(path)
+        img = scan.pixelData()
         img = self._windowing(img, scan)
         img = self._fix_photometric_interpretation(img, scan)
         img = self._rescale_with_slope_intercept(img, scan)
