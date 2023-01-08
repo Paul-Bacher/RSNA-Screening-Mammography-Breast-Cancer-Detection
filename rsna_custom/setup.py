@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='RSNACustom',
+    name='rsna_custom',
     version='0.1',
     packages=find_packages(),
     description='A custom package for the RSNA Breast Cancer Detection competition',

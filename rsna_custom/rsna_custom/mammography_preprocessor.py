@@ -1,6 +1,3 @@
-# Install required libraries
-!pip install -qU python-gdcm pydicom pylibjpeg
-
 # Standard library imports
 import os
 import time
