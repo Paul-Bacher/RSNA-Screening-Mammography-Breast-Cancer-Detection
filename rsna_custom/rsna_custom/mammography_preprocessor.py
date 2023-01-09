@@ -132,14 +132,14 @@ class MammographyPreprocessor():
             width = scan.WindowWidth
         y_range = 2**scan.BitsStored - 1
         if function == 'SIGMOID':
-            img = y_range / (1 + np.exp(-4 * (img - center) / width)) + y_min
+            img = y_range / (1 + np.exp(-4 * (img - center) / width))
         else: # LINEAR
             below = img <= (center - width / 2)
             above = img > (center + width / 2)
             between = np.logical_and(~below, ~above)
-            img[below] = y_min
-            img[above] = y_max
-            img[between] = ((img[between] - center) / width + 0.5) * y_range + y_min
+            img[below] = 0
+            img[above] = y_range
+            img[between] = ((img[between] - center) / width + 0.5) * y_range
         return img
     
     # Interpret pixels in a consistant way
