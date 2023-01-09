@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 import cv2
 import pydicom
-from pydicom.pixel_data_handlers import apply_windowing
 import dicomsdl
 
 # Visualization library imports
@@ -70,9 +69,8 @@ class MammographyPreprocessor():
                                 png: bool=True):
         scan = dicomsdl.open(path)
         img = scan.pixelData()
-        img = self._windowing(img, scan)
         img = self._fix_photometric_interpretation(img, scan)
-        img = self._rescale_with_slope_intercept(img, scan)
+        img = self._windowing(img, scan)
         img = self._normalize_to_255(img)
         img = self._flip_breast_side(img, scan)
         img = self._crop(img)
@@ -99,7 +97,7 @@ class MammographyPreprocessor():
     
     # Display the images from the dicom paths with optional preprocessing
     def display(self, paths: list, rows: int, cols: int,
-                preprocess: bool=False, cmap='bone',
+                preprocess: bool=False, cmap='bone', cbar: bool=False,
                 save_fig: bool=False, save_name: str='myplot.png'):
         assert len(paths) >= (rows * cols), \
         f"Not enough paths for the display. " \
@@ -113,6 +111,8 @@ class MammographyPreprocessor():
                 img = self.read_image(path)
             plt.subplot(rows, cols, i+1)
             plt.imshow(img, cmap=cmap)
+            if cbar:
+                plt.colorbar()
             plt.grid(False)
             plt.title(path.split('/')[-1][:-4])
         plt.suptitle("Preprocessed images" if preprocess \
@@ -123,7 +123,24 @@ class MammographyPreprocessor():
     
     # Adjust the contrast of an image
     def _windowing(self, img, scan):
-        return apply_windowing(img, scan)
+        function = scan.VOILUTFunction
+        if type(scan.WindowWidth) == list:
+            center = scan.WindowCenter[0]
+            width = scan.WindowWidth[0]
+        else:
+            center = scan.WindowCenter
+            width = scan.WindowWidth
+        y_range = 2**scan.BitsStored - 1
+        if function == 'SIGMOID':
+            img = y_range / (1 + np.exp(-4 * (img - center) / width)) + y_min
+        else: # LINEAR
+            below = img <= (center - width / 2)
+            above = img > (center + width / 2)
+            between = np.logical_and(~below, ~above)
+            img[below] = y_min
+            img[above] = y_max
+            img[between] = ((img[between] - center) / width + 0.5) * y_range + y_min
+        return img
     
     # Interpret pixels in a consistant way
     def _fix_photometric_interpretation(self, img, scan):
@@ -134,14 +151,6 @@ class MammographyPreprocessor():
         else:
             raise ValueError("Invalid Photometric Interpretation: {}"
                                .format(scan.PhotometricInterpretation))
-    
-    # Rescale if needed with the DICOM file parameters
-    def _rescale_with_slope_intercept(self, img, scan):
-        if scan.RescaleSlope != 1:
-            img *= scan.RescaleSlope
-        if scan.RescaleIntercept != 0:
-            img += scan.RescaleIntercept
-        return img
     
     # Cast into 8-bits for saving
     def _normalize_to_255(self, img):

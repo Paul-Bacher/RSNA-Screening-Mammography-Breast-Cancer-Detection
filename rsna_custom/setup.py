@@ -4,7 +4,7 @@ setup(
     name='rsna_custom',
     version='0.2',
     packages=find_packages(),
-    description='A custom package for the RSNA Breast Cancer Detection competition',
+    description='A custom package for preprocessing the RSNA Breast Cancer Detection dataset',
     author='Paul Bacher',
     author_email='paulbacher881@gmail.com',
     license='Free',
