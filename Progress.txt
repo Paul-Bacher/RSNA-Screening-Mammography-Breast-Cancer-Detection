@@ -1,0 +1,12 @@
+Competition progress
+
+Notebooks:
+EDA: OK
+Preprocessing DICOM files: OK
+Model baseline: IN PROGRESS
+Inference: NOK
+
+Tasks:
+- Add save option in parameters of preprocessor to choos a directory
+- Preprocess a 1024x512 dataset
+- Train the model with the dataset on TPU on 20 epochs and save it
