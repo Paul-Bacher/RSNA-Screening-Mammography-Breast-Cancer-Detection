@@ -66,7 +66,7 @@ class MammographyPreprocessor():
     
     # Apply the preprocessing methods on one image
     def preprocess_single_image(self, path: str, save: bool=False,
-                                png: bool=True):
+                                save_dir: str=None, png: bool=True):
         scan = dicomsdl.open(path)
         img = scan.pixelData()
         img = self._fix_photometric_interpretation(img, scan)
@@ -77,21 +77,22 @@ class MammographyPreprocessor():
         if self.size:
             img = self._resize(img)
         if save:
-            self._save_image(img, path, png)
+            self._save_image(img, path, png, save_dir)
         return img
     
     # Preprocess all the images from the paths
-    def preprocess_all(self, paths: list, save: bool=True,png: bool=True,
+    def preprocess_all(self, paths: list, save: bool=True,
+                       save_dir: str='train_images', png: bool=True,
                        parallel: bool=False, n_jobs: int=4):
         clock = time.time()
         if parallel:
             Parallel(n_jobs=n_jobs) \
             (delayed(self.preprocess_single_image) \
-            (path, save, png) for path in tqdm(paths, total=len(paths)))
+            (path, save, save_dir, png) for path in tqdm(paths, total=len(paths)))
             print("Parallel preprocessing done!")
         else:
             for i in trange(len(paths)):
-                self.preprocess_single_image(paths[i], save, png)
+                self.preprocess_single_image(paths[i], save, save_dir, png)
             print("Sequential preprocessing done!")
         print("Time =", np.around(time.time() - clock, 3), 'sec')
     
@@ -211,19 +212,22 @@ class MammographyPreprocessor():
         return cv2.resize(img, self.size)
     
     # Get the save path of a given dicom file
-    def _get_save_path(self, path, png):
+    def _get_save_path(self, path, png, save_dir):
         patient = path.split('/')[-2]
         filename = path.split('/')[-1]
         if png:
             filename = filename.replace('dcm', 'png')
         else:
             filename = filename.replace('dcm', 'jpeg')
-        save_path = os.path.join(os.getcwd(), patient, filename)
+        if save_dir:
+            save_path = os.path.join(os.getcwd(), save_dir, patient, filename)
+        else:
+            save_path = os.path.join(os.getcwd(), patient, filename)
         return save_path
     
     # Save the preprocessed image
-    def _save_image(self, img, path, png):
-        save_path = self._get_save_path(path, png)
+    def _save_image(self, img, path, png, save_dir):
+        save_path = self._get_save_path(path, png, save_dir)
         patient_folder = os.path.split(save_path)[0]
         os.makedirs(patient_folder, exist_ok=True)
         cv2.imwrite(save_path, img)
