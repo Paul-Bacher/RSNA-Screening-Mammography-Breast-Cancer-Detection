@@ -37,6 +37,7 @@ class MammographyPreprocessor():
         if train_path:
             self.train_path = train_path
         self.df = pd.read_csv(self.csv_path)
+        self.save_root = os.getcwd()
     
     # Get the paths from the preprocessor (V2)
     def get_paths(self, n: int=None, shuffle: bool=False, return_cache: bool=False):
@@ -220,9 +221,9 @@ class MammographyPreprocessor():
         else:
             filename = filename.replace('dcm', 'jpeg')
         if save_dir:
-            save_path = os.path.join(os.getcwd(), save_dir, patient, filename)
+            save_path = os.path.join(self.save_root, save_dir, patient, filename)
         else:
-            save_path = os.path.join(os.getcwd(), patient, filename)
+            save_path = os.path.join(self.save_root, patient, filename)
         return save_path
     
     # Save the preprocessed image
