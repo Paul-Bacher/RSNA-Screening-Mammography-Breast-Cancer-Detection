@@ -19,7 +19,7 @@ from tqdm.notebook import tqdm, trange
 from joblib import Parallel, delayed
 
 
-# V2
+# V3
 class MammographyPreprocessor():
     
     # Constructor
@@ -79,6 +79,7 @@ class MammographyPreprocessor():
             img = self._resize(img)
         if save:
             self._save_image(img, path, png, save_dir)
+            return # do not return the images to avoid memory leak
         return img
     
     # Preprocess all the images from the paths
