@@ -3,10 +3,11 @@ Competition progress
 Notebooks:
 EDA: OK
 Preprocessing DICOM files: OK
-Model baseline: IN PROGRESS
-Inference: NOK
+Model baseline: OK
+Inference: IN PROGRESS
+
+Done: RAM usage fixed
 
 Tasks:
-- Add save option in parameters of preprocessor to choos a directory
-- Preprocess a 1024x512 dataset
-- Train the model with the dataset on TPU on 20 epochs and save it
+- Fix inference errors
+- Fix upload 1024x2048 dataset
