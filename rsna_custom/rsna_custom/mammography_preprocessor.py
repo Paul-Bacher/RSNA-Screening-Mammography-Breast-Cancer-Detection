@@ -70,10 +70,10 @@ class MammographyPreprocessor():
                                 save_dir: str=None, png: bool=True):
         scan = dicomsdl.open(path)
         img = scan.pixelData()
-        img = self._fix_photometric_interpretation(img, scan)
         img = self._windowing(img, scan)
+        img = self._fix_photometric_interpretation(img, scan)
         img = self._normalize_to_255(img)
-        img = self._flip_breast_side(img, scan)
+        img = self._flip_breast_side(img)
         img = self._crop(img)
         if self.size:
             img = self._resize(img)
@@ -126,17 +126,20 @@ class MammographyPreprocessor():
     
     # Adjust the contrast of an image
     def _windowing(self, img, scan):
+        center = scan.WindowCenter
+        width = scan.WindowWidth
+        bits_stored = scan.BitsStored
         function = scan.VOILUTFunction
-        if type(scan.WindowWidth) == list:
-            center = scan.WindowCenter[0]
-            width = scan.WindowWidth[0]
-        else:
-            center = scan.WindowCenter
-            width = scan.WindowWidth
-        y_range = 2**scan.BitsStored - 1
+        if isinstance(center, list):
+            center = center[0]
+        if isinstance(width, list):
+            width = width[0] 
+        y_range = float(2**bits_stored - 1)
         if function == 'SIGMOID':
             img = y_range / (1 + np.exp(-4 * (img - center) / width))
         else: # LINEAR
+            center -= 0.5
+            width -= 1
             below = img <= (center - width / 2)
             above = img > (center + width / 2)
             between = np.logical_and(~below, ~above)
@@ -163,7 +166,7 @@ class MammographyPreprocessor():
         return img.astype(np.uint8)
     
     # Flip the breast horizontally on the chosen side 
-    def _flip_breast_side(self, img, scan):
+    def _flip_breast_side(self, img):
         img_breast_side = self._determine_breast_side(img)
         if img_breast_side == self.breast_side:
             return img
