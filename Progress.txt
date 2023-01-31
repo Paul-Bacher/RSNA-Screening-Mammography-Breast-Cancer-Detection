@@ -20,6 +20,7 @@ Next:
 - Params tuning
 - Training / Inference
 - Write in portefolio
+- Train with the full train set before the end of the competition
 
 Paul
 31 Janvier 2023
