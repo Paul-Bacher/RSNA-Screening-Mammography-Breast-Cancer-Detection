@@ -23,4 +23,4 @@ Next:
 - Train with the full train set before the end of the competition
 
 Paul
-31 Janvier 2023
+05 02 2023
