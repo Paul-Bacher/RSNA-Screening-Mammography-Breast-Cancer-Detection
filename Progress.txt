@@ -4,10 +4,23 @@ Notebooks:
 EDA: OK
 Preprocessing DICOM files: OK
 Model baseline: OK
-Inference: IN PROGRESS
+Inference: OK
+SCORE: 0.51
 
-Done: RAM usage fixed
+RAM usage ussue: fixed
+  Do not return the img after saving the png in the preprocessing function
+  
+Inference errors: fixed
+  Some samples in the test set do not have windowing params. Use try/except
+  
+Final TFRecords dataset
 
-Tasks:
-- Fix inference errors
-- Fix upload 1024x2048 dataset
+
+Next: 
+- Params tuning
+- Training / Inference
+- Write in portefolio
+- Train with the full train set before the end of the competition
+
+Paul
+05 02 2023
