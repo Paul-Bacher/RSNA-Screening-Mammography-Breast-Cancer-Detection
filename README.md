@@ -17,3 +17,5 @@ Currently, early detection of breast cancer requires the expertise of highly-tra
 The competition host, the Radiological Society of North America (RSNA) is a non-profit organization that represents 31 radiologic subspecialties from 145 countries around the world. RSNA promotes excellence in patient care and health care delivery through education, research, and technological innovation.
 
 Your efforts in this competition could help extend the benefits of early detection to a broader population. Greater access could further reduce breast cancer mortality worldwide.
+
+Public LB score: 0.54 / TOP 11%
